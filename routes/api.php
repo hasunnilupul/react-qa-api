@@ -1,8 +1,7 @@
 <?php
 
-use App\Models\Role;
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\QuestionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +15,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+/**
+ * API v1 group
+ */
+Route::prefix('v1')->group(function () {
+    /* Authentication routes */
+    Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/register', [AuthController::class, 'register']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+    /* Question resource routes */
+    Route::get('/questions', [QuestionController::class, 'index']);
+    Route::post('/questions', [QuestionController::class, 'store']);
+    Route::get('/questions/{unique}/{slug}', [QuestionController::class, 'show']);
 });

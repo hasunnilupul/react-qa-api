@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
@@ -15,7 +14,17 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert(['name' => 'Hasun Nilupul', 'email' => 'hasunnilupul21@gmail.com', 'password' => '1234', 'role_id'=>1, 'created_at'=>now()]);
-        DB::table('users')->insert(['name' => 'Softwire Solutions', 'email' => 'softwiresolution@gmail.com', 'password' => '12345678', 'role_id'=>2, 'created_at'=>now()]);
+        User::create([
+            'name' => 'Rishan Darshana',
+            'email' => 'rishandarshana@gmail.com',
+            'password' => bcrypt(12345678),
+            'role_id' => 1
+        ]);
+        User::create([
+            'name' => 'Softwire Solutions',
+            'email' => 'softwiresolution@gmail.com',
+            'password' => bcrypt(12345678),
+            'role_id' => 2
+        ]);
     }
 }
