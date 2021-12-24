@@ -40,5 +40,5 @@ Route::prefix('v1')->group(function () {
     Route::get('/questions/{question:unique}/answers/{answer:unique}/edit', [AnswerController::class, 'edit']);
     Route::put('/questions/{question:unique}/answers/{answer:unique}', [AnswerController::class, 'update']);
     Route::delete('/questions/{question:unique}/answers/{answer:unique}', [AnswerController::class, 'destroy']);
-    Route::post('/answers/{answer:unique}/accept', [AcceptAnswerController::class, '__invoke']);
+    Route::post('/answers/{answer:unique}/accept', AcceptAnswerController::class);
 });

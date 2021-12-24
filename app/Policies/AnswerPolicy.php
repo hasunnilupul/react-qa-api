@@ -23,6 +23,18 @@ class AnswerPolicy
     }
 
     /**
+     * Determine whether the user can accept the model.
+     *
+     * @param User $user
+     * @param Answer $answer
+     * @return bool
+     */
+    public function accept(User $user, Answer $answer): bool
+    {
+        return $user->id == $answer->question->user_id;
+    }
+
+    /**
      * Determine whether the user can delete the model.
      *
      * @param User $user
