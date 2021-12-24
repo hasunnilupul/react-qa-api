@@ -33,14 +33,16 @@ class QuestionController extends Controller
     public function index(Request $request): Response
     {
         $questions = [];
+        $query = Question::with('user');
         $order = $request->query('order');
         switch ($order) {
             case 'views':
-                $questions = Question::orderByDesc('views')->paginate(25);
+                $query = $query->orderByDesc('views');
                 break;
             default:
-                $questions = Question::latest('created_at')->paginate(25);
+                $query = $query->latest('created_at');
         }
+        $questions = $query->paginate(25);
         return $this->onSuccess($questions);
     }
 
@@ -68,7 +70,7 @@ class QuestionController extends Controller
             'body' => 'required|string|min:10|max:1500',
         ]);
         $question = Question::create([
-            'unique' => $this->generateUId(),
+            'unique' => $this->generateQuestionUId(),
             'title' => $fields['title'],
             'body' => $fields['description'],
             'user_id' => $request->user()->id

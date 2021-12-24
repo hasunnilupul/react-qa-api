@@ -4,10 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Answer extends Model
 {
     use HasFactory;
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::created(function ($answer){
+            $answer->question->increment('answers_count');
+            $answer->question->save();
+        });
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +35,10 @@ class Answer extends Model
      *
      * @var array<int, string>
      */
-    protected $hidden = [];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
     /**
      * The attributes that should be cast.
@@ -39,7 +52,11 @@ class Answer extends Model
      *
      * @var array<int, string>
      */
-    protected $appends = [];
+    protected $appends = [
+        'body_html',
+        'created_date',
+        'updated_date',
+    ];
 
     /**
      * return answer body as html
@@ -49,6 +66,26 @@ class Answer extends Model
     public function getBodyHtmlAttribute(): string
     {
         return \Parsedown::instance()->text($this->body);
+    }
+
+    /**
+     * return created_date as diffForHumans
+     *
+     * @return mixed
+     */
+    public function getCreatedDateAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
+
+    /**
+     * return updated_date as diffForHumans
+     *
+     * @return mixed
+     */
+    public function getUpdatedDateAttribute()
+    {
+        return $this->updated_at->diffForHumans();
     }
 
     /**
@@ -62,12 +99,12 @@ class Answer extends Model
     }
 
     /**
-     * Author of the answer
+     * User of the answer
      *
      * @return BelongsTo
      */
-    public function author(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class);
     }
 }

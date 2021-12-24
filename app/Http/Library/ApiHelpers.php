@@ -69,11 +69,26 @@ trait ApiHelpers
      * @return int
      * @throws Exception
      */
-    protected function generateUId(): int
+    protected function generateQuestionUId(): int
     {
         $uid = random_int(1000000000, 9999999999);
         if (Question::whereUnique($uid)->exists()) {
-            return $this->generateUId();
+            return $this->generateQuestionUId();
+        }
+        return $uid;
+    }
+
+    /**
+     * Generate unique id for answer
+     *
+     * @return int
+     * @throws Exception
+     */
+    protected function generateAnswerUId(): int
+    {
+        $uid = random_int(1000000000, 9999999999);
+        if (Answer::whereUnique($uid)->exists()) {
+            return $this->generateQuestionUId();
         }
         return $uid;
     }

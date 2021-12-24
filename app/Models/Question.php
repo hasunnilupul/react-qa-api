@@ -31,7 +31,10 @@ class Question extends Model
      *
      * @var array<int, string>
      */
-    protected $hidden = [];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
     /**
      * The attributes that should be cast.
@@ -47,8 +50,9 @@ class Question extends Model
      */
     protected $appends = [
         'body_html',
+        'status',
         'created_date',
-        'status'
+        'updated_date',
     ];
 
     /**
@@ -62,15 +66,14 @@ class Question extends Model
         $this->attributes['slug'] = Str::slug($value);
     }
 
-
     /**
-     * return created_date as diffForHumans
+     * return question body as html
      *
-     * @return mixed
+     * @return string
      */
-    public function getCreatedDateAttribute()
+    public function getBodyHtmlAttribute(): string
     {
-        return $this->created_at->diffForHumans();
+        return \Parsedown::instance()->text($this->body);
     }
 
     /**
@@ -90,23 +93,33 @@ class Question extends Model
     }
 
     /**
-     * return question body as html
+     * return created_date as diffForHumans
      *
-     * @return string
+     * @return mixed
      */
-    public function getBodyHtmlAttribute(): string
+    public function getCreatedDateAttribute()
     {
-        return \Parsedown::instance()->text($this->body);
+        return $this->created_at->diffForHumans();
     }
 
     /**
-     * Author of the question
+     * return updated_date as diffForHumans
+     *
+     * @return mixed
+     */
+    public function getUpdatedDateAttribute()
+    {
+        return $this->updated_at->diffForHumans();
+    }
+
+    /**
+     * User of the question
      *
      * @return BelongsTo
      */
-    public function author(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class);
     }
 
     /**

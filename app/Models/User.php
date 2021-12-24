@@ -45,6 +45,28 @@ class User extends Authenticatable
     ];
 
     /**
+     * The attributes that should be append
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'avatar',
+    ];
+
+    /**
+     * get user avatar url using gravatar
+     *
+     * @return string
+     */
+    public function getAvatarAttribute(): string
+    {
+        $email = $this->email;
+        $size = 32;
+
+        return "https://www.gravatar.com/avatar/" . md5( strtolower( trim( $email ) ) ) . "?s=" . $size;
+    }
+
+    /**
      * User's role
      *
      * @return BelongsTo

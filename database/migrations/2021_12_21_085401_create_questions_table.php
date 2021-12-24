@@ -21,7 +21,7 @@ class CreateQuestionsTable extends Migration
             $table->string('body', 1500);
             $table->integer('views')->default(0);
             $table->integer('votes')->default(0);
-            $table->integer('answers')->default(0);
+            $table->integer('answers_count')->default(0);
             $table->bigInteger('answer_id')->nullable();
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
