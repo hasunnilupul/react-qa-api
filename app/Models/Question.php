@@ -80,7 +80,7 @@ class Question extends Model
      */
     public function getStatusAttribute(): string
     {
-        if ($this->answers > 0) {
+        if ($this->answers_count > 0) {
             if ($this->answer_id) {
                 return 'accepted';
             }

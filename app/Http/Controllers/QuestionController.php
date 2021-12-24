@@ -86,7 +86,7 @@ class QuestionController extends Controller
      */
     public function show(string $unique, string $slug): Response
     {
-        $question = Question::whereUnique($unique)->whereSlug($slug)->first();
+        $question = Question::with('answers')->whereUnique($unique)->whereSlug($slug)->first();
         $question->increment('views');
         return $this->onSuccess($question);
     }
