@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
@@ -79,7 +80,7 @@ class Question extends Model
     /**
      * return question status
      *
-     * @return int
+     * @return string
      */
     public function getStatusAttribute(): string
     {
@@ -141,5 +142,43 @@ class Question extends Model
     {
         $this->answer_id = $answer->id;
         $this->save();
+    }
+
+    /**
+     * Question bookmarked users
+     *
+     * @return BelongsToMany
+     */
+    public function bookmarks(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'bookmarks');
+    }
+
+    /**
+     * return is bookmarked attribute
+     *
+     * @return bool
+     */
+    public function getIsBookmarkedAttribute(): bool
+    {
+        return $this->isBookmarked();
+    }
+
+    /**
+     * return question is bookmarked by current user
+     *
+     * @return bool
+     */
+    public function isBookmarked(): bool
+    {
+        return $this->bookmarks->where('user_id', auth()->id())->count() > 0;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBookmarksCountAttribute()
+    {
+        return $this->bookmarks->count();
     }
 }

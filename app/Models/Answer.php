@@ -10,19 +10,6 @@ class Answer extends Model
 {
     use HasFactory;
 
-    protected static function boot()
-    {
-        parent::boot();
-        static::created(function ($answer){
-            $answer->question->increment('answers_count');
-            $answer->question->save();
-        });
-        static::deleted(function ($answer){
-            $answer->question->decrement('answers_count');
-            $answer->question->save();
-        });
-    }
-
     /**
      * The attributes that are mass assignable.
      *
@@ -33,7 +20,6 @@ class Answer extends Model
         'body',
         'user_id'
     ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -43,14 +29,12 @@ class Answer extends Model
         'created_at',
         'updated_at',
     ];
-
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
     protected $casts = [];
-
     /**
      * The attributes that should be append
      *
@@ -58,9 +42,23 @@ class Answer extends Model
      */
     protected $appends = [
         'body_html',
+        'is_accepted',
         'created_date',
         'updated_date',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::created(function ($answer) {
+            $answer->question->increment('answers_count');
+            $answer->question->save();
+        });
+        static::deleted(function ($answer) {
+            $answer->question->decrement('answers_count');
+            $answer->question->save();
+        });
+    }
 
     /**
      * return answer body as html
@@ -70,6 +68,16 @@ class Answer extends Model
     public function getBodyHtmlAttribute(): string
     {
         return \Parsedown::instance()->text($this->body);
+    }
+
+    /**
+     * return is answer accepted
+     *
+     * @return bool
+     */
+    public function getIsAcceptedAttribute(): bool
+    {
+        return $this->id == $this->question->answer_id;
     }
 
     /**

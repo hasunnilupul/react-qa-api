@@ -77,6 +77,8 @@ class QuestionController extends Controller
     public function show(Question $question, string $slug = null): Response
     {
         $question->load(['answers']);
+        $question->append(['is_bookmarked', 'bookmarks_count']);
+        $question->setHidden(['bookmarks']);
         $question->increment('views');
         return $this->onSuccess($question);
     }
