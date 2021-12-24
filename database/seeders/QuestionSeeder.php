@@ -20,14 +20,14 @@ class QuestionSeeder extends Seeder
             'unique' => random_int(1000000000,9999999999),
             'title' => 'Question one',
             'slug' => 'question-one',
-            'description' => 'This is the question one.',
+            'body' => 'This is the question one.',
             'user_id' => User::find(1)->id
         ]);
         Question::create([
             'unique' => random_int(1000000000,9999999999),
             'title' => 'Question two',
             'slug' => 'question-two',
-            'description' => 'This is the question two.',
+            'body' => 'This is the question two.',
             'user_id' => User::find(1)->id
         ]);
     }

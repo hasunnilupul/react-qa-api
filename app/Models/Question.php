@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Question extends Model
 {
@@ -19,7 +20,7 @@ class Question extends Model
         'unique',
         'title',
         'slug',
-        'description',
+        'body',
         'answer_id',
         'user_id'
     ];
@@ -37,6 +38,66 @@ class Question extends Model
      * @var array<string, string>
      */
     protected $casts = [];
+
+    /**
+     * The attributes that should be append
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'body_html',
+        'created_date',
+        'status'
+    ];
+
+    /**
+     * set title and slug
+     *
+     * @param string $value
+     */
+    public function setTitleAttribute(string $value)
+    {
+        $this->attributes['title'] = $value;
+        $this->attributes['slug'] = Str::slug($value);
+    }
+
+
+    /**
+     * return created_date as diffForHumans
+     *
+     * @return mixed
+     */
+    public function getCreatedDateAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
+
+    /**
+     * return question status
+     *
+     * @return int
+     */
+    public function getStatusAttribute(): string
+    {
+        if ($this->answers > 0) {
+            if ($this->answer_id) {
+                return 'accepted';
+            }
+            return 'answered';
+        }
+        return 'unanswered';
+    }
+
+    /**
+     * return question body as html
+     *
+     * @return string
+     */
+    public function getBodyHtmlAttribute(): string
+    {
+        return \Parsedown::instance()->text($this->body);
+    }
+
 
     /**
      * Question author

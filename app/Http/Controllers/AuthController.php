@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Library\ApiHelpers;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    use ApiHelpers;
     /**
      * constructor.
      */
@@ -64,7 +66,7 @@ class AuthController extends Controller
                 'message' => 'Bad credentials'
             ], 401);
         }
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token', [($user->role->name)])->plainTextToken;
         $response = [
             'user' => $user,
             'token' => $token
@@ -79,7 +81,7 @@ class AuthController extends Controller
      */
     public function logout(): Response
     {
-        auth()->user()->tokens()->delete();
+        auth()->user()->currentAccessToken()->delete();
         return response(['message' => 'Logged out!']);
     }
 }

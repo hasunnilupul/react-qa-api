@@ -28,4 +28,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/questions', [QuestionController::class, 'index']);
     Route::post('/questions', [QuestionController::class, 'store']);
     Route::get('/questions/{unique}/{slug}', [QuestionController::class, 'show']);
+    Route::get('/questions/{unique}/{slug}/edit', [QuestionController::class, 'edit']);
+    Route::put('/questions/{unique}/{slug}', [QuestionController::class, 'update']);
+    Route::delete('/questions/{unique}/{slug}', [QuestionController::class, 'destroy']);
+    Route::get('/questions/{keyword}', [QuestionController::class, 'search']);
 });
