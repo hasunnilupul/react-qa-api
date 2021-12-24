@@ -132,6 +132,11 @@ class Question extends Model
         return $this->hasMany(Answer::class);
     }
 
+    /**
+     * Accept an answer
+     *
+     * @param Answer $answer
+     */
     public function acceptAnswer(Answer $answer)
     {
         $this->answer_id = $answer->id;
