@@ -32,7 +32,7 @@ class QuestionController extends Controller
      */
     public function index(Request $request): Response
     {
-        $questions = null;
+        $questions = [];
         $order = $request->query('order');
         switch ($order) {
             case 'views':
