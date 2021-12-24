@@ -2,12 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Question;
+use App\Models\Answer;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
-class QuestionPolicy
+class AnswerPolicy
 {
     use HandlesAuthorization;
 
@@ -15,23 +14,23 @@ class QuestionPolicy
      * Determine whether the user can update the model.
      *
      * @param User $user
-     * @param Question $question
+     * @param Answer $answer
      * @return bool
      */
-    public function update(User $user, Question $question): bool
+    public function update(User $user, Answer $answer): bool
     {
-        return $user->id == $question->user_id;
+        return $user->id == $answer->user_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param User $user
-     * @param Question $question
+     * @param Answer $answer
      * @return bool
      */
-    public function delete(User $user, Question $question): bool
+    public function delete(User $user, Answer $answer): bool
     {
-        return ($user->id == $question->user_id) && ($question->answers_count < 1);
+        return $user->id == $answer->user_id;
     }
 }

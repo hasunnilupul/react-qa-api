@@ -2,84 +2,89 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Library\ApiHelpers;
 use App\Models\Answer;
+use App\Models\Question;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class AnswerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    use ApiHelpers;
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * constructor.
      */
-    public function create()
+    public function __construct()
     {
-        //
+        $this->middleware('auth:sanctum');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Question $question
+     * @param Request $request
+     * @return Response
+     * @throws Exception
      */
-    public function store(Request $request)
+    public function store(Request $request, Question $question): Response
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Answer  $answer
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Answer $answer)
-    {
-        //
+        $fields = $request->validate([
+            'body' => 'required|string|min:10|max:1500',
+        ]);
+        $answer = $question->answers()->create([
+            'unique' => $this->generateAnswerUId(),
+            'body' => $fields['body'],
+            'user_id' => $request->user()->id,
+        ]);
+        return $this->onSuccess($answer, 'Your answer has been submitted.');
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Answer  $answer
-     * @return \Illuminate\Http\Response
+     * @param Question $question
+     * @param Answer $answer
+     * @return Response
+     * @throws AuthorizationException
      */
-    public function edit(Answer $answer)
+    public function edit(Question $question, Answer $answer): Response
     {
-        //
+        $this->authorize('update', $answer);
+        return $this->onSuccess($answer);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Answer  $answer
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Answer $answer
+     * @return Response
      */
-    public function update(Request $request, Answer $answer)
+    public function update(Request $request, Question $question, Answer $answer): Response
     {
-        //
+        $this->authorize('update', $answer);
+        $answer->update($request->validate([
+            'body' => 'required|string|min:10|max:1500',
+        ]));
+        return $this->onSuccess($answer, "Your answer has been updated.");
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Answer  $answer
-     * @return \Illuminate\Http\Response
+     * @param Question $question
+     * @param Answer $answer
+     * @return Response
+     * @throws AuthorizationException
      */
-    public function destroy(Answer $answer)
+    public function destroy(Question $question, Answer $answer): Response
     {
-        //
+        $this->authorize('delete', $answer);
+        $answer->delete();
+        return $this->onSuccess('Your answer has been deleted.');
     }
 }

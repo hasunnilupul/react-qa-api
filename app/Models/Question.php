@@ -131,4 +131,10 @@ class Question extends Model
     {
         return $this->hasMany(Answer::class);
     }
+
+    public function acceptAnswer(Answer $answer)
+    {
+        $this->answer_id = $answer->id;
+        $this->save();
+    }
 }

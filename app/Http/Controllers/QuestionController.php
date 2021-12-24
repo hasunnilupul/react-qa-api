@@ -8,8 +8,6 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 use function Illuminate\Support\Str;
 
 class QuestionController extends Controller
@@ -47,16 +45,6 @@ class QuestionController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return void
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
@@ -82,13 +70,13 @@ class QuestionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param string $unique
-     * @param string $slug
+     * @param Question $question
+     * @param string|null $slug
      * @return Response
      */
-    public function show(string $unique, string $slug): Response
+    public function show(Question $question, string $slug = null): Response
     {
-        $question = Question::with('answers')->whereUnique($unique)->whereSlug($slug)->first();
+        $question->load(['answers']);
         $question->increment('views');
         return $this->onSuccess($question);
     }
@@ -96,15 +84,13 @@ class QuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Request $request
-     * @param string $unique
-     * @param string $slug
+     * @param Question $question
+     * @param string|null $slug
      * @return Response
      * @throws AuthorizationException
      */
-    public function edit(Request $request, string $unique, string $slug): Response
+    public function edit(Question $question, string $slug = null): Response
     {
-        $question = Question::whereUnique($unique)->whereSlug($slug)->first();
         $this->authorize('update', $question);
         return $this->onSuccess($question);
     }
@@ -113,15 +99,14 @@ class QuestionController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @param Question $question
+     * @param string|null $slug
      * @param Request $request
-     * @param string $unique
-     * @param string $slug
      * @return Response
      * @throws AuthorizationException
      */
-    public function update(Request $request, string $unique, string $slug): Response
+    public function update(Question $question, Request $request, string $slug = null): Response
     {
-        $question = Question::whereUnique($unique)->whereSlug($slug)->first();
         $this->authorize('update', $question);
         $fields = $request->validate([
             'title' => 'required|string:min:10',
@@ -131,29 +116,24 @@ class QuestionController extends Controller
             'title' => $fields['title'],
             'body' => $fields['description'],
         ]);
-        return $this->onSuccess($question, "Question updated successfully.");
+        return $this->onSuccess($question, "Your question updated.");
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
-     * @param string $unique
-     * @param string $slug
+     * @param Question $question
+     * @param string|null $slug
      * @return Response
+     * @throws AuthorizationException
      */
-    public function destroy(Request $request, string $unique, string $slug): Response
+    public function destroy(Question $question, string $slug = null): Response
     {
-        $question = Question::whereUnique($unique)->whereSlug($slug)->first();
         $this->authorize('delete', $question);
         if (empty($question)) {
             return $this->onError(404, "Question not found.");
         }
-        $data = Question::destroy($question->id);
-        if ($data == 1)
-            return $this->onSuccess($data, "Question deleted successfully");
-        else
-            return $this->onError(404, "Question delete failed.");
+        return $this->onSuccess(Question::destroy($question->id), "Your question deleted.");
     }
 
     /**
@@ -165,9 +145,9 @@ class QuestionController extends Controller
     public function search(string $keyword): Response
     {
         $questions = Question::where('title', 'like', '%' . $keyword . '%')->get();
-        if(count($questions)==0){
+        if (count($questions) == 0) {
             return $this->onSuccess($questions, "no results found.");
         }
-        return $this->onSuccess($questions, count($questions)." results found.");
+        return $this->onSuccess($questions, count($questions) . " results found.");
     }
 }
