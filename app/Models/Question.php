@@ -151,7 +151,7 @@ class Question extends Model
      */
     public function bookmarks(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'bookmarks');
+        return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
     }
 
     /**

@@ -104,6 +104,6 @@ class User extends Authenticatable
      */
     public function bookmarks(): BelongsToMany
     {
-        return $this->belongsToMany(Question::class, 'bookmarks');
+        return $this->belongsToMany(Question::class, 'bookmarks')->withTimestamps();
     }
 }
