@@ -71,6 +71,16 @@ class Question extends Model
     }
 
     /**
+     * set and clean body
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setBodyAttribute(string $value){
+        $this->attributes['body']=clean($value);
+    }
+
+    /**
      * return question body as html
      *
      * @return string

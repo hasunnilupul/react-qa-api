@@ -12,6 +12,7 @@
         "laravel/framework": "^8.65",
         "laravel/sanctum": "^2.13",
         "laravel/tinker": "^2.5",
+        "mews/purifier": "^3.3",
         "parsedown/laravel": "^1.2"
     },
     "require-dev": {
