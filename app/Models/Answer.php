@@ -44,7 +44,6 @@ class Answer extends Model
      * @var array<int, string>
      */
     protected $appends = [
-        'body_html',
         'created_date',
         'updated_date',
     ];

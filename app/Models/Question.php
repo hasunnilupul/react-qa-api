@@ -53,7 +53,6 @@ class Question extends Model
      */
     protected $appends = [
         'excerpt',
-        'body_html',
         'status',
         'created_date',
         'updated_date',
@@ -80,17 +79,7 @@ class Question extends Model
         $this->attributes['body']=clean($value);
     }
 
-    /**
-     * return question body as html
-     *
-     * @return string
-     */
-    public function getBodyHtmlAttribute(): string
-    {
-        return $this->bodyHtml();
-    }
-
-    private function bodyHtml()
+    private function bodyHtml(): string
     {
         return Parsedown::instance()->text($this->body);
     }
@@ -188,7 +177,7 @@ class Question extends Model
      */
     public function answers(): HasMany
     {
-        return $this->hasMany(Answer::class)->without('question');
+        return $this->hasMany(Answer::class)->without('question')->orderBy('votes_count', 'desc');
     }
 
     /**
