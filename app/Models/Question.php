@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
+use App\Http\Library\VotableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Str;
+use Parsedown;
 
 class Question extends Model
 {
-    use HasFactory;
+    use HasFactory, VotableTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -51,6 +52,7 @@ class Question extends Model
      * @var array<int, string>
      */
     protected $appends = [
+        'excerpt',
         'body_html',
         'status',
         'created_date',
@@ -75,7 +77,22 @@ class Question extends Model
      */
     public function getBodyHtmlAttribute(): string
     {
-        return \Parsedown::instance()->text($this->body);
+        return $this->bodyHtml();
+    }
+
+    private function bodyHtml()
+    {
+        return Parsedown::instance()->text($this->body);
+    }
+
+    /**
+     * return body limited to a length
+     *
+     * @return string
+     */
+    public function getExcerptAttribute(): string
+    {
+        return Str::limit(strip_tags($this->bodyHtml()), 250);
     }
 
     /**
@@ -115,6 +132,8 @@ class Question extends Model
     }
 
     /**
+     * return bookmarks_count
+     *
      * @return mixed
      */
     public function getBookmarksCountAttribute()
@@ -123,7 +142,7 @@ class Question extends Model
     }
 
     /**
-     * return is bookmarked attribute
+     * return is_bookmarked attribute
      *
      * @return bool
      */
@@ -181,31 +200,5 @@ class Question extends Model
     {
         $this->answer_id = $answer->id;
         $this->save();
-    }
-
-    /**
-     * @return MorphToMany
-     */
-    public function upVotes(): MorphToMany
-    {
-        return $this->votes()->wherePivot('vote', 1);
-    }
-
-    /**
-     * Question votes
-     *
-     * @return MorphToMany
-     */
-    public function votes(): MorphToMany
-    {
-        return $this->morphToMany(User::class, 'votable');
-    }
-
-    /**
-     * @return MorphToMany
-     */
-    public function downVotes(): MorphToMany
-    {
-        return $this->votes()->wherePivot('vote', -1);
     }
 }

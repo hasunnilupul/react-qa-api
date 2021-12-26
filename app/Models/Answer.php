@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\Http\Library\VotableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Parsedown;
 
 class Answer extends Model
 {
-    use HasFactory;
+    use HasFactory, VotableTrait;
 
 
     /**
@@ -73,7 +74,7 @@ class Answer extends Model
      */
     public function getBodyHtmlAttribute(): string
     {
-        return \Parsedown::instance()->text($this->body);
+        return Parsedown::instance()->text($this->body);
     }
 
     /**
@@ -124,31 +125,5 @@ class Answer extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * @return MorphToMany
-     */
-    public function upVotes(): MorphToMany
-    {
-        return $this->votes()->wherePivot('vote', 1);
-    }
-
-    /**
-     * Answer votes
-     *
-     * @return MorphToMany
-     */
-    public function votes(): MorphToMany
-    {
-        return $this->morphToMany(User::class, 'votable');
-    }
-
-    /**
-     * @return MorphToMany
-     */
-    public function downVotes(): MorphToMany
-    {
-        return $this->votes()->wherePivot('vote', -1);
     }
 }
