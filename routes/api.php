@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AcceptAnswerController;
 use App\Http\Controllers\AnswerController;
+use App\Http\Controllers\AnswerVoteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\QuestionController;
@@ -46,4 +47,5 @@ Route::prefix('v1')->group(function () {
     Route::put('/questions/{question:unique}/answers/{answer:unique}', [AnswerController::class, 'update'])->name('answers.update');
     Route::delete('/questions/{question:unique}/answers/{answer:unique}', [AnswerController::class, 'destroy'])->name('answers.destroy');
     Route::post('/answers/{answer:unique}/accept', AcceptAnswerController::class)->name('answers.accept');
+    Route::post('/answers/{answer:unique}/vote', AnswerVoteController::class)->name('answers.vote');
 });

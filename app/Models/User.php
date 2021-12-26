@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -109,16 +110,6 @@ class User extends Authenticatable
     }
 
     /**
-     * User voted answers
-     *
-     * @return MorphToMany
-     */
-    public function votedAnswers(): MorphToMany
-    {
-        return $this->morphedByMany(Answer::class, 'votable');
-    }
-
-    /**
      * Vote a question
      *
      * @param Question $question
@@ -128,17 +119,7 @@ class User extends Authenticatable
     public function voteQuestion(Question $question, int $vote)
     {
         $voteQuestions = $this->votedQuestions();
-        if ($voteQuestions->where('votable_id', $question->id)->exists()) {
-            $voteQuestions->updateExistingPivot($question, ['vote' => $vote]);
-        } else {
-            $voteQuestions->attach($question, ['vote' => $vote]);
-        }
-
-        $question->load('votes');
-        $downVotes = (int)$question->downVotes()->sum('vote');;
-        $upVotes = (int)$question->upVotes()->sum('vote');
-        $question->votes_count = $upVotes + $downVotes;
-        $question->save();
+        $this->voteQuestionOrAnswer($voteQuestions, $question, $vote);
     }
 
     /**
@@ -149,5 +130,49 @@ class User extends Authenticatable
     public function votedQuestions(): MorphToMany
     {
         return $this->morphedByMany(Question::class, 'votable');
+    }
+
+    /**
+     * @param MorphToMany $relationship
+     * @param Model $model
+     * @param int $vote
+     * @return void
+     */
+    private function voteQuestionOrAnswer(MorphToMany $relationship, Model $model, int $vote): void
+    {
+        if ($relationship->where('votable_id', $model->id)->exists()) {
+            $relationship->updateExistingPivot($model, ['vote' => $vote]);
+        } else {
+            $relationship->attach($model, ['vote' => $vote]);
+        }
+
+        $model->load('votes');
+        $downVotes = (int)$model->downVotes()->sum('vote');;
+        $upVotes = (int)$model->upVotes()->sum('vote');
+        $model->votes_count = $upVotes + $downVotes;
+        $model->save();
+    }
+
+    /**
+     * Vote an answer
+     *
+     * @param Answer $answer
+     * @param int $vote
+     * @return void
+     */
+    public function voteAnswer(Answer $answer, int $vote)
+    {
+        $voteAnswers = $this->votedAnswers();
+        $this->voteQuestionOrAnswer($voteAnswers, $answer, $vote);
+    }
+
+    /**
+     * User voted answers
+     *
+     * @return MorphToMany
+     */
+    public function votedAnswers(): MorphToMany
+    {
+        return $this->morphedByMany(Answer::class, 'votable');
     }
 }

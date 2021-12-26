@@ -127,6 +127,14 @@ class Answer extends Model
     }
 
     /**
+     * @return MorphToMany
+     */
+    public function upVotes(): MorphToMany
+    {
+        return $this->votes()->wherePivot('vote', 1);
+    }
+
+    /**
      * Answer votes
      *
      * @return MorphToMany
@@ -134,5 +142,13 @@ class Answer extends Model
     public function votes(): MorphToMany
     {
         return $this->morphToMany(User::class, 'votable');
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function downVotes(): MorphToMany
+    {
+        return $this->votes()->wherePivot('vote', -1);
     }
 }
