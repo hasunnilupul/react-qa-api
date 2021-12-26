@@ -5,6 +5,7 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuestionVoteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,6 +38,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/search/{keyword}', [QuestionController::class, 'search'])->name('questions.search');
     Route::post('/questions/{question:unique}/{slug?}/bookmarks', [BookmarksController::class, 'store'])->name('questions.bookmark');
     Route::delete('/questions/{question:unique}/{slug?}/bookmarks', [BookmarksController::class, 'destroy'])->name('questions.remove-bookmark');
+    Route::post('/questions/{question:unique}/{slug?}/vote', QuestionVoteController::class)->name('questions.vote');
 
     /* Answer resource routes */
     Route::post('/questions/{question:unique}/answers', [AnswerController::class, 'store'])->name('answers.store');

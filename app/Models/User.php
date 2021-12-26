@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -105,5 +106,48 @@ class User extends Authenticatable
     public function bookmarks(): BelongsToMany
     {
         return $this->belongsToMany(Question::class, 'bookmarks')->withTimestamps();
+    }
+
+    /**
+     * User voted answers
+     *
+     * @return MorphToMany
+     */
+    public function votedAnswers(): MorphToMany
+    {
+        return $this->morphedByMany(Answer::class, 'votable');
+    }
+
+    /**
+     * Vote a question
+     *
+     * @param Question $question
+     * @param int $vote
+     * @return void
+     */
+    public function voteQuestion(Question $question, int $vote)
+    {
+        $voteQuestions = $this->votedQuestions();
+        if ($voteQuestions->where('votable_id', $question->id)->exists()) {
+            $voteQuestions->updateExistingPivot($question, ['vote' => $vote]);
+        } else {
+            $voteQuestions->attach($question, ['vote' => $vote]);
+        }
+
+        $question->load('votes');
+        $downVotes = (int)$question->downVotes()->sum('vote');;
+        $upVotes = (int)$question->upVotes()->sum('vote');
+        $question->votes_count = $upVotes + $downVotes;
+        $question->save();
+    }
+
+    /**
+     * User voted questions
+     *
+     * @return MorphToMany
+     */
+    public function votedQuestions(): MorphToMany
+    {
+        return $this->morphedByMany(Question::class, 'votable');
     }
 }

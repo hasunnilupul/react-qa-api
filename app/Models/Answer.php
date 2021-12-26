@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Answer extends Model
 {
@@ -123,5 +124,15 @@ class Answer extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Answer votes
+     *
+     * @return MorphToMany
+     */
+    public function votes(): MorphToMany
+    {
+        return $this->morphToMany(User::class, 'votable');
     }
 }
