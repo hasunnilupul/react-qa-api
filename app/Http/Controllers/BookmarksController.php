@@ -25,7 +25,7 @@ class BookmarksController extends Controller
     public function store(Question $question): Response
     {
         $question->bookmarks()->attach(auth()->id());
-        return $this->onSuccess(true, "question added to bookmarked.");
+        return $this->onSuccess(true , "question added to bookmarks.");
     }
 
     /**
@@ -34,7 +34,7 @@ class BookmarksController extends Controller
      */
     public function destroy(Question $question): Response
     {
-        $question->bookmarks()->detach(auth()->id());
-        return $this->onSuccess(true, "question removed from bookmarks.");
+        $result = $question->bookmarks()->detach(auth()->id());
+        return $this->onSuccess(boolval($result), "question removed from bookmarks.");
     }
 }

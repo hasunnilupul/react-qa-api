@@ -36,7 +36,7 @@ Route::prefix('v1')->group(function () {
     Route::delete('/questions/{question:unique}/{slug?}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::get('/search/{keyword}', [QuestionController::class, 'search'])->name('questions.search');
     Route::post('/questions/{question:unique}/{slug?}/bookmarks', [BookmarksController::class, 'store'])->name('questions.bookmark');
-    Route::delete('/questions/{question:unique}/{slug?}/bookmarks', [BookmarksController::class, 'delete'])->name('questions.remove-bookmark');
+    Route::delete('/questions/{question:unique}/{slug?}/bookmarks', [BookmarksController::class, 'destroy'])->name('questions.remove-bookmark');
 
     /* Answer resource routes */
     Route::post('/questions/{question:unique}/answers', [AnswerController::class, 'store'])->name('answers.store');

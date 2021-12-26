@@ -10,6 +10,7 @@ class Answer extends Model
 {
     use HasFactory;
 
+
     /**
      * The attributes that are mass assignable.
      *
@@ -42,11 +43,15 @@ class Answer extends Model
      */
     protected $appends = [
         'body_html',
-        'is_accepted',
         'created_date',
         'updated_date',
     ];
 
+    /**
+     * On model access
+     *
+     * @return void
+     */
     protected static function boot()
     {
         parent::boot();

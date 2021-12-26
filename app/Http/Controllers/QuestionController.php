@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
+use App\Http\Requests\QuestionDeleteRequest;
+use App\Http\Requests\QuestionEditRequest;
+use App\Http\Requests\QuestionStoreRequest;
+use App\Http\Requests\QuestionUpdateRequest;
 use App\Models\Question;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -47,20 +51,17 @@ class QuestionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param QuestionStoreRequest $request
      * @return Response
      * @throws Exception
      */
-    public function store(Request $request): Response
+    public function store(QuestionStoreRequest $request): Response
     {
-        $fields = $request->validate([
-            'title' => 'required|string:min:10',
-            'body' => 'required|string|min:10|max:1500',
-        ]);
+        $fields = $request->validated();
         $question = Question::create([
             'unique' => $this->generateQuestionUId(),
             'title' => $fields['title'],
-            'body' => $fields['description'],
+            'body' => $fields['body'],
             'user_id' => $request->user()->id
         ]);
 
@@ -87,13 +88,13 @@ class QuestionController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Question $question
+     * @param QuestionEditRequest $request
      * @param string|null $slug
      * @return Response
      * @throws AuthorizationException
      */
-    public function edit(Question $question, string $slug = null): Response
+    public function edit(Question $question, QuestionEditRequest $request, string $slug = null): Response
     {
-        $this->authorize('update', $question);
         return $this->onSuccess($question);
     }
 
@@ -102,21 +103,16 @@ class QuestionController extends Controller
      * Update the specified resource in storage.
      *
      * @param Question $question
+     * @param QuestionUpdateRequest $request
      * @param string|null $slug
-     * @param Request $request
      * @return Response
-     * @throws AuthorizationException
      */
-    public function update(Question $question, Request $request, string $slug = null): Response
+    public function update(Question $question, QuestionUpdateRequest $request, string $slug = null): Response
     {
-        $this->authorize('update', $question);
-        $fields = $request->validate([
-            'title' => 'required|string:min:10',
-            'body' => 'required|string|min:10|max:1500',
-        ]);
+        $fields = $request->validated();
         $question->update([
             'title' => $fields['title'],
-            'body' => $fields['description'],
+            'body' => $fields['body'],
         ]);
         return $this->onSuccess($question, "Your question updated.");
     }
@@ -125,13 +121,12 @@ class QuestionController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Question $question
+     * @param QuestionDeleteRequest $request
      * @param string|null $slug
      * @return Response
-     * @throws AuthorizationException
      */
-    public function destroy(Question $question, string $slug = null): Response
+    public function destroy(Question $question, QuestionDeleteRequest $request, string $slug = null): Response
     {
-        $this->authorize('delete', $question);
         if (empty($question)) {
             return $this->onError(404, "Question not found.");
         }

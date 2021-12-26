@@ -45,7 +45,7 @@ class Question extends Model
     protected $casts = [];
 
     /**
-     * The attributes that should be append
+     * The attributes that should be appended
      *
      * @var array<int, string>
      */
@@ -114,44 +114,11 @@ class Question extends Model
     }
 
     /**
-     * User of the question
-     *
-     * @return BelongsTo
+     * @return mixed
      */
-    public function user(): BelongsTo
+    public function getBookmarksCountAttribute()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Question answers
-     *
-     * @return HasMany
-     */
-    public function answers(): HasMany
-    {
-        return $this->hasMany(Answer::class);
-    }
-
-    /**
-     * Accept an answer
-     *
-     * @param Answer $answer
-     */
-    public function acceptAnswer(Answer $answer)
-    {
-        $this->answer_id = $answer->id;
-        $this->save();
-    }
-
-    /**
-     * Question bookmarked users
-     *
-     * @return BelongsToMany
-     */
-    public function bookmarks(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
+        return $this->bookmarks->count();
     }
 
     /**
@@ -175,10 +142,43 @@ class Question extends Model
     }
 
     /**
-     * @return mixed
+     * User of the question
+     *
+     * @return BelongsTo
      */
-    public function getBookmarksCountAttribute()
+    public function user(): BelongsTo
     {
-        return $this->bookmarks->count();
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Question answers
+     *
+     * @return HasMany
+     */
+    public function answers(): HasMany
+    {
+        return $this->hasMany(Answer::class)->without('question');
+    }
+
+    /**
+     * Question bookmarked users
+     *
+     * @return BelongsToMany
+     */
+    public function bookmarks(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
+    }
+
+    /**
+     * Accept an answer
+     *
+     * @param Answer $answer
+     */
+    public function acceptAnswer(Answer $answer)
+    {
+        $this->answer_id = $answer->id;
+        $this->save();
     }
 }
