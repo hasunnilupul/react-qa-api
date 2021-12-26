@@ -9,10 +9,8 @@ use App\Http\Requests\QuestionStoreRequest;
 use App\Http\Requests\QuestionUpdateRequest;
 use App\Models\Question;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use function Illuminate\Support\Str;
 
 class QuestionController extends Controller
 {
@@ -57,14 +55,7 @@ class QuestionController extends Controller
      */
     public function store(QuestionStoreRequest $request): Response
     {
-        $fields = $request->validated();
-        $question = Question::create([
-            'unique' => $this->generateQuestionUId(),
-            'title' => $fields['title'],
-            'body' => $fields['body'],
-            'user_id' => $request->user()->id
-        ]);
-
+        $question = Question::create($request->validated());
         return $this->onSuccess($question, 'Your question has been posted.');
     }
 
@@ -91,7 +82,6 @@ class QuestionController extends Controller
      * @param QuestionEditRequest $request
      * @param string|null $slug
      * @return Response
-     * @throws AuthorizationException
      */
     public function edit(Question $question, QuestionEditRequest $request, string $slug = null): Response
     {
@@ -109,11 +99,7 @@ class QuestionController extends Controller
      */
     public function update(Question $question, QuestionUpdateRequest $request, string $slug = null): Response
     {
-        $fields = $request->validated();
-        $question->update([
-            'title' => $fields['title'],
-            'body' => $fields['body'],
-        ]);
+        $question->update($request->validated());
         return $this->onSuccess($question, "Your question updated.");
     }
 

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Library\ApiHelpers;
+use App\Http\Requests\AnswerDeleteRequest;
+use App\Http\Requests\AnswerEditRequest;
+use App\Http\Requests\AnswerStoreRequest;
+use App\Http\Requests\AnswerUpdateRequest;
 use App\Models\Answer;
 use App\Models\Question;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class AnswerController extends Controller
@@ -25,21 +27,14 @@ class AnswerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @param AnswerStoreRequest $request
      * @param Question $question
-     * @param Request $request
      * @return Response
      * @throws Exception
      */
-    public function store(Request $request, Question $question): Response
+    public function store(Question $question, AnswerStoreRequest $request): Response
     {
-        $fields = $request->validate([
-            'body' => 'required|string|min:10|max:1500',
-        ]);
-        $answer = $question->answers()->create([
-            'unique' => $this->generateAnswerUId(),
-            'body' => $fields['body'],
-            'user_id' => $request->user()->id,
-        ]);
+        $answer = $question->answers()->create($request->validated());
         return $this->onSuccess($answer, 'Your answer has been submitted.');
     }
 
@@ -48,28 +43,25 @@ class AnswerController extends Controller
      *
      * @param Question $question
      * @param Answer $answer
+     * @param AnswerEditRequest $request
      * @return Response
-     * @throws AuthorizationException
      */
-    public function edit(Question $question, Answer $answer): Response
+    public function edit(Question $question, Answer $answer, AnswerEditRequest $request): Response
     {
-        $this->authorize('update', $answer);
         return $this->onSuccess($answer);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param Question $question
      * @param Answer $answer
+     * @param AnswerUpdateRequest $request
      * @return Response
      */
-    public function update(Request $request, Question $question, Answer $answer): Response
+    public function update(Question $question, Answer $answer, AnswerUpdateRequest $request): Response
     {
-        $this->authorize('update', $answer);
-        $answer->update($request->validate([
-            'body' => 'required|string|min:10|max:1500',
-        ]));
+        $answer->update($request->validated());
         return $this->onSuccess($answer, "Your answer has been updated.");
     }
 
@@ -78,12 +70,11 @@ class AnswerController extends Controller
      *
      * @param Question $question
      * @param Answer $answer
+     * @param AnswerDeleteRequest $request
      * @return Response
-     * @throws AuthorizationException
      */
-    public function destroy(Question $question, Answer $answer): Response
+    public function destroy(Question $question, Answer $answer, AnswerDeleteRequest $request): Response
     {
-        $this->authorize('delete', $answer);
         $answer->delete();
         return $this->onSuccess('Your answer has been deleted.');
     }
