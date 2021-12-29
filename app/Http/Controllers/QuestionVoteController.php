@@ -27,9 +27,9 @@ class QuestionVoteController extends Controller
     {
         $fields = $request->validated();
         $vote = (int)$fields['vote'];
-        auth()->user()->voteQuestion($question, $vote);
+        $votes_count = auth()->user()->voteQuestion($question, $vote);
         return $this->onSuccess([
-            'votes_count' => $question->votes_count
+            'votes_count' => $votes_count
         ], "your vote recorded.");
     }
 }

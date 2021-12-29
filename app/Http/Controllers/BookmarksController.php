@@ -35,6 +35,6 @@ class BookmarksController extends Controller
     public function destroy(Question $question): Response
     {
         $result = $question->bookmarks()->detach(auth()->id());
-        return $this->onSuccess(boolval($result), "question removed from bookmarks.");
+        return $this->onSuccess(false, "question removed from bookmarks.");
     }
 }

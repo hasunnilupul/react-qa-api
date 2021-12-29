@@ -121,7 +121,7 @@ class User extends Authenticatable
     public function voteQuestion(Question $question, int $vote)
     {
         $voteQuestions = $this->votedQuestions();
-        $this->voteQuestionOrAnswer($voteQuestions, $question, $vote);
+        return $this->voteQuestionOrAnswer($voteQuestions, $question, $vote);
     }
 
     /**
@@ -138,9 +138,9 @@ class User extends Authenticatable
      * @param MorphToMany $relationship
      * @param Model $model
      * @param int $vote
-     * @return void
+     * @return int
      */
-    private function voteQuestionOrAnswer(MorphToMany $relationship, Model $model, int $vote): void
+    private function voteQuestionOrAnswer(MorphToMany $relationship, Model $model, int $vote): int
     {
         if ($relationship->where('votable_id', $model->id)->exists()) {
             $relationship->updateExistingPivot($model, ['vote' => $vote]);
@@ -153,6 +153,7 @@ class User extends Authenticatable
         $upVotes = (int)$model->upVotes()->sum('vote');
         $model->votes_count = $upVotes + $downVotes;
         $model->save();
+        return $model->votes_count;
     }
 
     /**
@@ -165,7 +166,7 @@ class User extends Authenticatable
     public function voteAnswer(Answer $answer, int $vote)
     {
         $voteAnswers = $this->votedAnswers();
-        $this->voteQuestionOrAnswer($voteAnswers, $answer, $vote);
+        return $this->voteQuestionOrAnswer($voteAnswers, $answer, $vote);
     }
 
     /**
