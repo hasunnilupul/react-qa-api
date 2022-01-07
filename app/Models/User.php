@@ -116,9 +116,9 @@ class User extends Authenticatable
      *
      * @param Question $question
      * @param int $vote
-     * @return void
+     * @return int
      */
-    public function voteQuestion(Question $question, int $vote)
+    public function voteQuestion(Question $question, int $vote): int
     {
         $voteQuestions = $this->votedQuestions();
         return $this->voteQuestionOrAnswer($voteQuestions, $question, $vote);
@@ -161,9 +161,9 @@ class User extends Authenticatable
      *
      * @param Answer $answer
      * @param int $vote
-     * @return void
+     * @return int
      */
-    public function voteAnswer(Answer $answer, int $vote)
+    public function voteAnswer(Answer $answer, int $vote): int
     {
         $voteAnswers = $this->votedAnswers();
         return $this->voteQuestionOrAnswer($voteAnswers, $answer, $vote);

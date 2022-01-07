@@ -36,8 +36,14 @@ class QuestionController extends Controller
         $query = Question::with('user');
         $order = $request->query('order');
         switch ($order) {
-            case 'views':
-                $query = $query->orderByDesc('views');
+            case 'active':
+                $query = $query->orderByDesc('updated_at');
+                break;
+            case 'unanswered':
+                $query = $query->where('answers_count',0);
+                break;
+            case 'votes':
+                $query = $query->orderByDesc('votes_count');
                 break;
             default:
                 $query = $query->latest('created_at');
@@ -68,10 +74,10 @@ class QuestionController extends Controller
      */
     public function show(Question $question, string $slug = null): Response
     {
-        $question->load(['user', 'answers.user']);
+        $question->load(['user']);
         $question->append(['is_bookmarked', 'bookmarks_count']);
         $question->setHidden(['bookmarks']);
-        $question->increment('views');
+        $question->__call('increment',['views']);
         return $this->onSuccess($question);
     }
 

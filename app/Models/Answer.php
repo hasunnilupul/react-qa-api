@@ -12,7 +12,6 @@ class Answer extends Model
 {
     use HasFactory, VotableTrait;
 
-
     /**
      * The attributes that are mass assignable.
      *
@@ -23,6 +22,7 @@ class Answer extends Model
         'body',
         'user_id'
     ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -32,18 +32,21 @@ class Answer extends Model
         'created_at',
         'updated_at',
     ];
+
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
     protected $casts = [];
+
     /**
      * The attributes that should be append
      *
      * @var array<int, string>
      */
     protected $appends = [
+        'user',
         'created_date',
         'updated_date',
     ];
@@ -72,8 +75,9 @@ class Answer extends Model
      * @param string $value
      * @return void
      */
-    public function setBodyAttribute(string $value){
-        $this->attributes['body']=clean($value);
+    public function setBodyAttribute(string $value)
+    {
+        $this->attributes['body'] = clean($value);
     }
 
     /**
@@ -94,6 +98,21 @@ class Answer extends Model
     public function getIsAcceptedAttribute(): bool
     {
         return $this->id == $this->question->answer_id;
+    }
+
+    public function getUserAttribute()
+    {
+        return $this->user()->get();
+    }
+
+    /**
+     * User of the answer
+     *
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -124,15 +143,5 @@ class Answer extends Model
     public function question(): BelongsTo
     {
         return $this->belongsTo(Question::class);
-    }
-
-    /**
-     * User of the answer
-     *
-     * @return BelongsTo
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 }

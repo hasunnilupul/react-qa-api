@@ -10,6 +10,7 @@ use App\Http\Requests\AnswerUpdateRequest;
 use App\Models\Answer;
 use App\Models\Question;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class AnswerController extends Controller
@@ -21,7 +22,32 @@ class AnswerController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+        $this->middleware('auth:sanctum')->except(['index']);
+    }
+
+    /**
+     * Display a listing of a question resource.
+     *
+     * @param Question $question
+     * @param Request $request
+     * @return Response
+     */
+    public function index(Question $question, Request $request): Response
+    {
+        $query = $question->answers();
+        $order = $request->query('order');
+        switch ($order) {
+            case 'active':
+                $query = $query->latest('updated_at');
+                break;
+            case 'oldest':
+                $query = $query->oldest('created_at');
+                break;
+            default:
+                $query = $query->orderByDesc('votes_count');
+        }
+        $answers = $query->paginate(25);
+        return $this->onSuccess($answers);
     }
 
     /**
@@ -35,6 +61,7 @@ class AnswerController extends Controller
     public function store(Question $question, AnswerStoreRequest $request): Response
     {
         $answer = $question->answers()->create($request->validated());
+        $answer->setHidden(['created_at', 'updated_at', 'question']);
         return $this->onSuccess($answer, 'Your answer has been submitted.');
     }
 

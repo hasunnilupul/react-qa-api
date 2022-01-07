@@ -28,6 +28,6 @@ class AcceptAnswerController extends Controller
     {
         $this->authorize('accept', $answer);
         $answer->question->acceptAnswer($answer);
-        return $this->onSuccess($answer->id, "answer accepted as the best answer.");
+        return $this->onSuccess(['accepted_answer_id'=>$answer->id], "answer accepted as the best answer.");
     }
 }

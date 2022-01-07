@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Parsedown;
 
@@ -75,13 +76,9 @@ class Question extends Model
      * @param string $value
      * @return void
      */
-    public function setBodyAttribute(string $value){
-        $this->attributes['body']=clean($value);
-    }
-
-    private function bodyHtml(): string
+    public function setBodyAttribute(string $value)
     {
-        return Parsedown::instance()->text($this->body);
+        $this->attributes['body'] = clean($value);
     }
 
     /**
@@ -92,6 +89,11 @@ class Question extends Model
     public function getExcerptAttribute(): string
     {
         return Str::limit(strip_tags($this->bodyHtml()), 250);
+    }
+
+    private function bodyHtml(): string
+    {
+        return Parsedown::instance()->text($this->body);
     }
 
     /**
