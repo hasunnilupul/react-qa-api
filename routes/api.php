@@ -52,5 +52,6 @@ Route::prefix('v1')->group(function () {
     Route::post('/answers/{answer:unique}/vote', AnswerVoteController::class)->name('answers.vote');
 
     /* Shorten routes */
-    Route::get('/q/{question:unique}', [ShortenLinkController::class, 'question_show'])->name('questions.shorten-show');
+    Route::get('/q/{question:unique}', [ShortenLinkController::class, 'question_show'])->name('questions.shorten');
+    Route::get('/a/{answer:unique}', [ShortenLinkController::class, 'answer_show'])->name('answers.shorten');
 });
