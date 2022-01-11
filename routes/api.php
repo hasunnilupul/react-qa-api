@@ -7,7 +7,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionVoteController;
-use App\Http\Controllers\ShortenLinkController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,7 +49,4 @@ Route::prefix('v1')->group(function () {
     Route::delete('/questions/{question:unique}/answers/{answer:unique}', [AnswerController::class, 'destroy'])->name('answers.destroy');
     Route::post('/answers/{answer:unique}/accept', AcceptAnswerController::class)->name('answers.accept');
     Route::post('/answers/{answer:unique}/vote', AnswerVoteController::class)->name('answers.vote');
-
-    /* Shorten routes */
-    Route::get('/q/{question:unique}', [ShortenLinkController::class, 'question_show'])->name('questions.shorten-show');
 });
