@@ -30,21 +30,26 @@ class AnswerController extends Controller
      *
      * @param Question $question
      * @param Request $request
+     * @param string|null $unique
      * @return Response
      */
-    public function index(Question $question, Request $request): Response
+    public function index(Question $question, Request $request, string $unique = null): Response
     {
-        $query = $question->answers();
-        $order = $request->query('order');
-        switch ($order) {
-            case 'active':
-                $query = $query->latest('updated_at');
-                break;
-            case 'oldest':
-                $query = $query->oldest('created_at');
-                break;
-            default:
-                $query = $query->orderByDesc('votes_count');
+        if ($unique != null) {
+            $query = $question->answersUnordered()->orderByRaw("CASE WHEN answers.unique = ? THEN 1 ELSE 2 END", [$unique]);
+        } else {
+            $query = $question->answers();
+            $order = $request->query('order');
+            switch ($order) {
+                case 'active':
+                    $query = $query->latest('updated_at');
+                    break;
+                case 'oldest':
+                    $query = $query->oldest('created_at');
+                    break;
+                default:
+                    $query = $query->orderByDesc('votes_count');
+            }
         }
         $answers = $query->paginate(25);
         return $this->onSuccess($answers);

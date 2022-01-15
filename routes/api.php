@@ -43,7 +43,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/questions/{question:unique}/{slug?}/vote', QuestionVoteController::class)->name('questions.vote');
 
     /* Answer resource routes */
-    Route::get('/answers/{question:unique}', [AnswerController::class, 'index'])->name('answers.index');
+    Route::get('/answers/{question:unique}/{unique?}', [AnswerController::class, 'index'])->name('answers.index');
     Route::post('/questions/{question:unique}/answers', [AnswerController::class, 'store'])->name('answers.store');
     Route::get('/questions/{question:unique}/answers/{answer:unique}/edit', [AnswerController::class, 'edit'])->name('answers.edit');
     Route::put('/questions/{question:unique}/answers/{answer:unique}', [AnswerController::class, 'update'])->name('answers.update');

@@ -183,6 +183,16 @@ class Question extends Model
     }
 
     /**
+     * Question answers unordered
+     *
+     * @return HasMany
+     */
+    public function answersUnordered(): HasMany
+    {
+        return $this->hasMany(Answer::class)->without('question');
+    }
+
+    /**
      * Question bookmarked users
      *
      * @return BelongsToMany
